@@ -40,4 +40,27 @@ describe("app", () => {
         });
     });
   });
+  describe("/api/articles", () => {
+    it.only("status 200, responds with an array on object articles with the following properties:  author, title, article_id, topic, created_at, votes, article_img_url", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(12);
+          body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
 });

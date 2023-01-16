@@ -1,16 +1,18 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-const { getTopics, getHello } = require("./controllers/controller");
+const {
+  getTopics,
+  getHello,
+  getArticles,
+} = require("./controllers/controller");
 
 app.get("/api", getHello);
 app.get("/api/topics", getTopics);
+app.get("/api/articles", getArticles);
 
 app.use((err, req, res, next) => {
-  console.log(err);
-  if (err.status) {
-    res.status(err.status).send({ msg: "Bad Request" });
-  }
+  res.status(404).send({ msg: "Bad Request" });
 });
 app.use((err, req, res, next) => {
   console.log(err);
