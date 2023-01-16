@@ -23,7 +23,7 @@ describe("app", () => {
     });
   });
   describe("/api/topics", () => {
-    it.only("status 200, responds wit an array of topic objects with slug and description properties", () => {
+    it("status 200, responds wit an array of topic objects with slug and description properties", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)

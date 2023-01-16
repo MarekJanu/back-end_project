@@ -8,6 +8,12 @@ app.get("/api/topics", getTopics);
 
 app.use((err, req, res, next) => {
   console.log(err);
+  if (err.status) {
+    res.status(err.status).send({ msg: "Bad Request" });
+  }
+});
+app.use((err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 });
 module.exports = app;
