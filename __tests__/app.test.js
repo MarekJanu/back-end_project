@@ -107,4 +107,37 @@ describe("app", () => {
         });
     });
   });
+  describe(" /api/articles/:article_id/comments", () => {
+    it("returns with an array of comments (objects) for given article_id, where each comment have the following properties: comment_id, votes, created_at, author, body, article_id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          const selectedComments = comments[1];
+          expect(selectedComments).toHaveLength(11);
+          selectedComments.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+                comment_id: expect.any(Number),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+  });
+  describe("404 for technically valid yet non-existing article id", () => {
+    it("responds with 404 and article_id not found -> path -> /api/articles/42/comments", () => {
+      return request(app)
+        .get("/api/articles/42/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article id not found");
+        });
+    });
+  });
 });

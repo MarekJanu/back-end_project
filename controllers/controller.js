@@ -1,7 +1,10 @@
+const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
   selectArticles,
   selectArticleById,
+  selectCommentsByArticleId,
+  fetchArticleById,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -23,4 +26,22 @@ const getArticleById = (req, res, next) => {
     res.status(200).send({ article });
   });
 };
-module.exports = { getTopics, getHello, getArticles, getArticleById };
+const getCommentsByArticeId = (req, res, next) => {
+  const { article_id } = req.params;
+  Promise.all([
+    fetchArticleById(article_id),
+    selectCommentsByArticleId(article_id),
+  ])
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+module.exports = {
+  getTopics,
+  getHello,
+  getArticles,
+  getArticleById,
+  getCommentsByArticeId,
+};

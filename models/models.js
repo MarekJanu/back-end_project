@@ -15,12 +15,36 @@ const selectArticles = () => {
     });
 };
 const selectArticleById = (id) => {
-  let idArr = Object.values(id);
   return db
-    .query("SELECT * FROM articles WHERE articles.article_id = $1;", idArr)
+    .query("SELECT * FROM articles WHERE articles.article_id = $1;", [id])
     .then(({ rows: article }) => {
       return article[0];
     });
 };
-
-module.exports = { selectTopics, selectArticles, selectArticleById };
+const selectCommentsByArticleId = (id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;",
+      [id]
+    )
+    .then((comments) => {
+      return comments.rows;
+    });
+};
+const fetchArticleById = (id) => {
+  const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
+  return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "article id not found" });
+    } else {
+      return rows[0];
+    }
+  });
+};
+module.exports = {
+  selectTopics,
+  selectArticles,
+  selectArticleById,
+  selectCommentsByArticleId,
+  fetchArticleById,
+};
