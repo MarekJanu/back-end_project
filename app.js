@@ -11,7 +11,8 @@ app.get("/api", getHello);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 
-app.use((err, req, res, next) => {
+app.use((req, res, next) => {
+  console.log(res.status);
   res.status(404).send({ msg: "Bad Request" });
 });
 app.use((err, req, res, next) => {
