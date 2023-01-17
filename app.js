@@ -5,11 +5,13 @@ const {
   getTopics,
   getHello,
   getArticles,
+  getArticleById,
 } = require("./controllers/controller");
 
 app.get("/api", getHello);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
+app.get("/api/articles/:article_id", getArticleById);
 
 app.use((req, res, next) => {
   console.log(res.status);

@@ -28,7 +28,6 @@ describe("app", () => {
         .get("/api/banana")
         .expect(404)
         .then(({ body }) => {
-          //   console.log(body.msg);
           expect(body.msg).toBe("Bad Request");
         });
     });
@@ -81,14 +80,30 @@ describe("app", () => {
           body.articles.forEach((article) => {
             expect(article).toHaveProperty("comment_count");
           });
-          // installed but not working - for later to solve as not essential
-          //   expect(body.articles).toBeSortedBy("created_at", {
-          //     descending: true,
-          //   });
           expect(body.articles[0].created_at).toBe("2020-11-03T09:12:00.000Z");
           expect(body.articles[body.articles.length - 1].created_at).toBe(
             "2020-06-06T09:10:00.000Z"
           );
+        });
+    });
+  });
+  describe("/api/articles/:article_id", () => {
+    it("returns an object with the followin properties: author, title, article_id, body, topic, created_at, votes, article_img_url", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body: { article } }) => {
+          expect(article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
         });
     });
   });
