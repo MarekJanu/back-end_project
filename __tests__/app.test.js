@@ -31,6 +31,14 @@ describe("app", () => {
           expect(body.msg).toBe("Bad Request");
         });
     });
+    it(" status 400, { msg : Bad Request } on non existing id and invalid end-point /api/articles/42/hello", () => {
+      return request(app)
+        .get("/api/articles/42/hello")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
   });
   describe("/api/topics", () => {
     it("status 200, responds wit an array of topic objects with slug and description properties", () => {
@@ -137,6 +145,14 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("article id not found");
+        });
+    });
+    it("200 response with msg no comments found if valid article id but no comments created", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.msg).toBe("no comments found");
         });
     });
   });
