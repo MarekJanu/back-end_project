@@ -14,5 +14,13 @@ const selectArticles = () => {
       return articles;
     });
 };
+const selectArticleById = (id) => {
+  let idArr = Object.values(id);
+  return db
+    .query("SELECT * FROM articles WHERE articles.article_id = $1;", idArr)
+    .then(({ rows: article }) => {
+      return article[0];
+    });
+};
 
-module.exports = { selectTopics, selectArticles };
+module.exports = { selectTopics, selectArticles, selectArticleById };

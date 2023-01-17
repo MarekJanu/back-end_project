@@ -1,4 +1,8 @@
-const { selectTopics, selectArticles } = require("../models/models");
+const {
+  selectTopics,
+  selectArticles,
+  selectArticleById,
+} = require("../models/models");
 
 const getHello = (req, res, next) => {
   res.status(200).send({ msg: "Hello!" });
@@ -10,8 +14,13 @@ const getTopics = (req, res, next) => {
 };
 const getArticles = (req, res, next) => {
   selectArticles().then((articles) => {
-    // console.log(articles);
     res.status(200).send({ articles });
   });
 };
-module.exports = { getTopics, getHello, getArticles };
+const getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  selectArticleById(article_id).then((article) => {
+    res.status(200).send({ article });
+  });
+};
+module.exports = { getTopics, getHello, getArticles, getArticleById };
