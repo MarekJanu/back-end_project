@@ -42,10 +42,22 @@ const fetchArticleById = (id) => {
     }
   });
 };
+//To concider: username validation, comment body vs sql injection, rejecting if article id not exists in db
+// maybe I need just one general func for any id validation (ಠ_ಠ)   ¯\_(ツ)_/¯
+const insertCommentByArticleId = (article_id, username, body) => {
+  // console.log([article_id], [body]);
+  // console.log(body);
+  const queryStr =
+    "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING*;";
+  return db.query(queryStr, [body, username, article_id]).then((response) => {
+    return response.rows;
+  });
+};
 module.exports = {
   selectTopics,
   selectArticles,
   selectArticleById,
   selectCommentsByArticleId,
   fetchArticleById,
+  insertCommentByArticleId,
 };

@@ -5,6 +5,7 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   fetchArticleById,
+  insertCommentByArticleId,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -37,6 +38,16 @@ const getCommentsByArticeId = (req, res, next) => {
     })
     .catch(next);
 };
+const postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  // console.log(username, body);
+  // console.log("controller input here --->   ", article_id, body);
+  insertCommentByArticleId(article_id, username, body).then((comment) => {
+    // console.log("from controller on the way back  ", response);
+    res.status(201).send({ comment });
+  });
+};
 
 module.exports = {
   getTopics,
@@ -44,4 +55,5 @@ module.exports = {
   getArticles,
   getArticleById,
   getCommentsByArticeId,
+  postCommentByArticleId,
 };
