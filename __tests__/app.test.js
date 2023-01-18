@@ -31,6 +31,14 @@ describe("app", () => {
           expect(body.msg).toBe("Bad Request");
         });
     });
+    it(" status 400, { msg : Bad Request } on non existing id and invalid end-point /api/articles/42/hello", () => {
+      return request(app)
+        .get("/api/articles/42/hello")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
   });
   describe("/api/topics", () => {
     it("status 200, responds wit an array of topic objects with slug and description properties", () => {
@@ -104,6 +112,47 @@ describe("app", () => {
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           });
+        });
+    });
+  });
+  describe(" /api/articles/:article_id/comments", () => {
+    it("returns with an array of comments (objects) for given article_id, where each comment have the following properties: comment_id, votes, created_at, author, body, article_id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          const selectedComments = comments[1];
+          expect(selectedComments).toHaveLength(11);
+          selectedComments.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+                comment_id: expect.any(Number),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+  });
+  describe("404 for technically valid yet non-existing article id", () => {
+    it("responds with 404 and article_id not found -> path -> /api/articles/42/comments", () => {
+      return request(app)
+        .get("/api/articles/42/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article id not found");
+        });
+    });
+    it("200 response with msg no comments found if valid article id but no comments created", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.msg).toBe("no comments found");
         });
     });
   });
