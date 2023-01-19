@@ -51,9 +51,8 @@ const postCommentByArticleId = (req, res, next) => {
     fetchArticleById(article_id),
     insertCommentByArticleId(body, username, article_id),
   ])
-    .then((response) => {
-      const comment = { comment: response[2] };
-      res.status(201).send(comment);
+    .then(([user, article, comment]) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
@@ -63,8 +62,8 @@ const patchVotesArticle = (req, res, next) => {
   Promise.all([
     fetchArticleById(article_id),
     updateVotesCount(updateVotesBy, article_id),
-  ]).then((response) => {
-    res.status(202).send(response[1]);
+  ]).then(([articleOriginal, articleUpdated]) => {
+    res.status(200).send(articleUpdated);
   });
 };
 const getUsers = (req, res, next) => {

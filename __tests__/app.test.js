@@ -3,7 +3,6 @@ const app = require("../app");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
-const { response } = require("express");
 
 beforeEach(() => {
   return seed(testData);
@@ -168,16 +167,6 @@ describe("app", () => {
         .send(inputBody)
         .expect(201)
         .then(({ body: { comment } }) => {
-          expect(comment).toEqual(
-            expect.objectContaining({
-              comment_id: expect.any(Number),
-              body: expect.any(String),
-              article_id: expect.any(Number),
-              author: expect.any(String),
-              votes: expect.any(Number),
-              created_at: expect.any(String),
-            })
-          );
           expect(comment).toEqual({
             comment_id: 19,
             body: "my test comment with text emoji (*′☉.̫☉)",
@@ -221,7 +210,7 @@ describe("app", () => {
       return request(app)
         .patch("/api/articles/3")
         .send(inputBody)
-        .expect(202)
+        .expect(200)
         .then(({ body: article }) => {
           expect(article).toEqual({
             article_id: 3,
@@ -236,12 +225,12 @@ describe("app", () => {
           });
         });
     });
-    it("same as above but with decrementing number of votes", () => {
+    it("Request body accepts an object in the form { inc_votes: newVote }, updating votes, responds with the updated article - decrementing number of votes", () => {
       const inputBody = { inc_votes: -3 };
       return request(app)
         .patch("/api/articles/3")
         .send(inputBody)
-        .expect(202)
+        .expect(200)
         .then(({ body: article }) => {
           expect(article).toEqual({
             article_id: 3,
