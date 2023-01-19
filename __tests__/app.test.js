@@ -215,4 +215,26 @@ describe("app", () => {
         });
     });
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    it("Request body accepts an object in the form { inc_votes: newVote }, updating votes, responds with the updated article", () => {
+      const inputBody = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/articles/3")
+        .send(inputBody)
+        .expect(202)
+        .then(({ body: article }) => {
+          expect(article).toEqual({
+            article_id: 3,
+            title: "Eight pug gifs that remind me of mitch",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "some gifs",
+            created_at: "2020-11-03T09:12:00.000Z",
+            votes: 1,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+        });
+    });
+  });
 });

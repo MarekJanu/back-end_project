@@ -60,6 +60,13 @@ const insertCommentByArticleId = (body, username, article_id) => {
     return response.rows[0];
   });
 };
+const updateVotesCount = (updateVotesBy, article_id) => {
+  const queryStr =
+    "UPDATE articles SET votes = articles.votes + $1 WHERE articles.article_id = $2 RETURNING *;";
+  return db.query(queryStr, [updateVotesBy, article_id]).then(({ rows }) => {
+    return rows[0];
+  });
+};
 module.exports = {
   selectTopics,
   selectArticles,
@@ -68,4 +75,5 @@ module.exports = {
   fetchArticleById,
   insertCommentByArticleId,
   checkUsername,
+  updateVotesCount,
 };

@@ -1,3 +1,4 @@
+const { response } = require("express");
 const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
@@ -7,6 +8,7 @@ const {
   fetchArticleById,
   insertCommentByArticleId,
   checkUsername,
+  updateVotesCount,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -54,6 +56,13 @@ const postCommentByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+const patchVotesArticle = (req, res, next) => {
+  const { inc_votes: updateVotesBy } = req.body;
+  const { article_id } = req.params;
+  updateVotesCount(updateVotesBy, article_id).then((response) => {
+    res.status(202).send(response);
+  });
+};
 
 module.exports = {
   getTopics,
@@ -62,4 +71,5 @@ module.exports = {
   getArticleById,
   getCommentsByArticeId,
   postCommentByArticleId,
+  patchVotesArticle,
 };
