@@ -26,7 +26,7 @@ const selectCommentsByArticleId = (id) => {
     "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;";
   return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
     if (rowCount === 0) {
-      return Promise.reject({ status: 200, msg: "no comments found" });
+      return Promise.reject({ status: 404, msg: "no comments found" });
     } else {
       return rows;
     }
@@ -42,11 +42,18 @@ const fetchArticleById = (id) => {
     }
   });
 };
-//To concider: username validation, comment body vs sql injection, rejecting if article id not exists in db
-// maybe I need just one general func for any id validation (ಠ_ಠ)   ¯\_(ツ)_/¯
-const insertCommentByArticleId = (article_id, username, body) => {
-  // console.log([article_id], [body]);
-  // console.log(body);
+
+const checkUsername = (username) => {
+  const queryStr = "SELECT * FROM users WHERE users.username = $1;";
+  return db.query(queryStr, [username]).then(({ rowCount, rows }) => {
+    if (!rowCount) {
+      return Promise.reject({ status: 404, msg: "username not found" });
+    }
+    return rows[0];
+  });
+};
+
+const insertCommentByArticleId = (body, username, article_id) => {
   const queryStr =
     "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING*;";
   return db.query(queryStr, [body, username, article_id]).then((response) => {
@@ -60,4 +67,5 @@ module.exports = {
   selectCommentsByArticleId,
   fetchArticleById,
   insertCommentByArticleId,
+  checkUsername,
 };

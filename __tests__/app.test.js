@@ -150,15 +150,14 @@ describe("app", () => {
     it("200 response with msg no comments found if valid article id but no comments created", () => {
       return request(app)
         .get("/api/articles/2/comments")
-        .expect(200)
+        .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("no comments found");
         });
     });
   });
   describe("POST /api/articles/:article_id/comments", () => {
-    // this is actually for an error - did it for non existing username - username check first
-    it.only("request body accepts an object with properties: username, body. Responds with posted comment", () => {
+    it("accepts an object(the request body) with properties: username, body. Responds with posted comment if username exists and if article_id exists", () => {
       const inputBody = {
         username: "lurker",
         body: "my test comment with text emoji (*′☉.̫☉)",
@@ -169,7 +168,6 @@ describe("app", () => {
         .expect(201)
         .then((response) => {
           const comment = { comment: response.body.comment[0] };
-          // console.log(comment);
           expect(comment.comment).toEqual(
             expect.objectContaining({
               comment_id: expect.any(Number),
@@ -180,6 +178,32 @@ describe("app", () => {
               created_at: expect.any(String),
             })
           );
+        });
+    });
+    it("responds with error msg when request with nonexisting username", () => {
+      const inputBody = {
+        username: "ziutek13",
+        body: "pierwszy!!!! ✌(ツ)",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(inputBody)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("username not found");
+        });
+    });
+    it("responds with error msg when request with nonexisting article_id (but still a number)", () => {
+      const inputBody = {
+        username: "lurker",
+        body: "pierwszy!!!! ✌(ツ)",
+      };
+      return request(app)
+        .post("/api/articles/100/comments")
+        .send(inputBody)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article id not found");
         });
     });
   });
