@@ -7,24 +7,23 @@ const {
   getArticles,
   getArticleById,
   getCommentsByArticeId,
+  postCommentByArticleId,
 } = require("./controllers/controller");
+const {
+  handleCustomErrors,
+  handleServerErrors,
+  handle404BadRequest,
+} = require("./errors/index");
 
 app.get("/api", getHello);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticeId);
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
-app.use((req, res, next) => {
-  res.status(404).send({ msg: "Bad Request" });
-});
-app.use((err, req, res, next) => {
-  if (err.status && err.msg) {
-    res.status(err.status).send({ msg: err.msg });
-  }
-});
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(500).send({ msg: "Internal Server Error" });
-});
+app.use(handle404BadRequest);
+app.use(handleCustomErrors);
+app.use(handleServerErrors);
+
 module.exports = app;

@@ -1,3 +1,5 @@
+const { response } = require("express");
+const { user } = require("pg/lib/defaults");
 const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
@@ -5,6 +7,8 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   fetchArticleById,
+  insertCommentByArticleId,
+  checkUsername,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -37,6 +41,20 @@ const getCommentsByArticeId = (req, res, next) => {
     })
     .catch(next);
 };
+const postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+
+  Promise.all([
+    checkUsername(username),
+    fetchArticleById(article_id),
+    insertCommentByArticleId(body, username, article_id),
+  ])
+    .then((comment) => {
+      res.status(201).send({ comment: comment[2] });
+    })
+    .catch(next);
+};
 
 module.exports = {
   getTopics,
@@ -44,4 +62,5 @@ module.exports = {
   getArticles,
   getArticleById,
   getCommentsByArticeId,
+  postCommentByArticleId,
 };
