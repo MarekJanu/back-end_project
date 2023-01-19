@@ -9,6 +9,7 @@ const {
   insertCommentByArticleId,
   checkUsername,
   updateVotesCount,
+  fetchUsers,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -66,6 +67,11 @@ const patchVotesArticle = (req, res, next) => {
     res.status(202).send(response[1]);
   });
 };
+const getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send(users);
+  });
+};
 
 module.exports = {
   getTopics,
@@ -75,4 +81,5 @@ module.exports = {
   getCommentsByArticeId,
   postCommentByArticleId,
   patchVotesArticle,
+  getUsers,
 };
