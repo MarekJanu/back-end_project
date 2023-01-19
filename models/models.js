@@ -57,7 +57,14 @@ const insertCommentByArticleId = (body, username, article_id) => {
   const queryStr =
     "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING*;";
   return db.query(queryStr, [body, username, article_id]).then((response) => {
-    return response.rows;
+    return response.rows[0];
+  });
+};
+const updateVotesCount = (updateVotesBy, article_id) => {
+  const queryStr =
+    "UPDATE articles SET votes = articles.votes + $1 WHERE articles.article_id = $2 RETURNING *;";
+  return db.query(queryStr, [updateVotesBy, article_id]).then(({ rows }) => {
+    return rows[0];
   });
 };
 module.exports = {
@@ -68,4 +75,5 @@ module.exports = {
   fetchArticleById,
   insertCommentByArticleId,
   checkUsername,
+  updateVotesCount,
 };

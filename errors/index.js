@@ -4,7 +4,6 @@ const handle404BadRequest = (req, res, next) => {
 
 const handleCustomErrors = (err, req, res, next) => {
   if (err.status && err.msg) {
-    console.log(err.status);
     res.status(err.status).send({ msg: err.msg });
   } else next(err);
 };

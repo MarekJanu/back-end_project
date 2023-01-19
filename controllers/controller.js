@@ -1,5 +1,4 @@
 const { response } = require("express");
-const { user } = require("pg/lib/defaults");
 const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
@@ -9,6 +8,7 @@ const {
   fetchArticleById,
   insertCommentByArticleId,
   checkUsername,
+  updateVotesCount,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -50,10 +50,21 @@ const postCommentByArticleId = (req, res, next) => {
     fetchArticleById(article_id),
     insertCommentByArticleId(body, username, article_id),
   ])
-    .then((comment) => {
-      res.status(201).send({ comment: comment[2] });
+    .then((response) => {
+      const comment = { comment: response[2] };
+      res.status(201).send(comment);
     })
     .catch(next);
+};
+const patchVotesArticle = (req, res, next) => {
+  const { inc_votes: updateVotesBy } = req.body;
+  const { article_id } = req.params;
+  Promise.all([
+    fetchArticleById(article_id),
+    updateVotesCount(updateVotesBy, article_id),
+  ]).then((response) => {
+    res.status(202).send(response[1]);
+  });
 };
 
 module.exports = {
@@ -63,4 +74,5 @@ module.exports = {
   getArticleById,
   getCommentsByArticeId,
   postCommentByArticleId,
+  patchVotesArticle,
 };
