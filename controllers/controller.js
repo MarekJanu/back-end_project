@@ -59,8 +59,11 @@ const postCommentByArticleId = (req, res, next) => {
 const patchVotesArticle = (req, res, next) => {
   const { inc_votes: updateVotesBy } = req.body;
   const { article_id } = req.params;
-  updateVotesCount(updateVotesBy, article_id).then((response) => {
-    res.status(202).send(response);
+  Promise.all([
+    fetchArticleById(article_id),
+    updateVotesCount(updateVotesBy, article_id),
+  ]).then((response) => {
+    res.status(202).send(response[1]);
   });
 };
 
