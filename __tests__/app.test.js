@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
+const { response } = require("express");
 
 beforeEach(() => {
   return seed(testData);
@@ -166,9 +167,8 @@ describe("app", () => {
         .post("/api/articles/1/comments")
         .send(inputBody)
         .expect(201)
-        .then((response) => {
-          const comment = { comment: response.body.comment[0] };
-          expect(comment.comment).toEqual(
+        .then(({ body: { comment } }) => {
+          expect(comment).toEqual(
             expect.objectContaining({
               comment_id: expect.any(Number),
               body: expect.any(String),
@@ -178,6 +178,14 @@ describe("app", () => {
               created_at: expect.any(String),
             })
           );
+          expect(comment).toEqual({
+            comment_id: 19,
+            body: "my test comment with text emoji (*′☉.̫☉)",
+            article_id: 1,
+            author: "lurker",
+            votes: 0,
+            created_at: expect.any(String),
+          });
         });
     });
     it("responds with error msg when request with nonexisting username", () => {
@@ -189,8 +197,8 @@ describe("app", () => {
         .post("/api/articles/1/comments")
         .send(inputBody)
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("username not found");
+        .then(({ body: err }) => {
+          expect(err.msg).toBe("username not found");
         });
     });
     it("responds with error msg when request with nonexisting article_id (but still a number)", () => {
@@ -202,8 +210,8 @@ describe("app", () => {
         .post("/api/articles/100/comments")
         .send(inputBody)
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("article id not found");
+        .then(({ body: err }) => {
+          expect(err.msg).toBe("article id not found");
         });
     });
   });

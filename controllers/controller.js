@@ -1,5 +1,3 @@
-const { response } = require("express");
-const { user } = require("pg/lib/defaults");
 const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
@@ -50,8 +48,9 @@ const postCommentByArticleId = (req, res, next) => {
     fetchArticleById(article_id),
     insertCommentByArticleId(body, username, article_id),
   ])
-    .then((comment) => {
-      res.status(201).send({ comment: comment[2] });
+    .then((response) => {
+      const comment = { comment: response[2] };
+      res.status(201).send(comment);
     })
     .catch(next);
 };
