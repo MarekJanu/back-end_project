@@ -50,7 +50,10 @@ const selectArticles = (
 
 const selectArticleById = (id) => {
   return db
-    .query("SELECT * FROM articles WHERE articles.article_id = $1;", [id])
+    .query(
+      "SELECT articles.author, articles.title, articles.body, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;",
+      [id]
+    )
     .then(({ rows: article }) => {
       return article[0];
     });
