@@ -275,4 +275,17 @@ describe("app", () => {
         });
     });
   });
+  describe("DELETE comment", () => {
+    it("DELETE /api/comments/:comment_id, responds with 204 and no content", () => {
+      return request(app)
+        .delete("/api/comments/3")
+        .expect(204)
+        .then(() => {
+          request(app)
+            .get("/api/comments")
+            .expect(404)
+            .then(({ body: { msg: err } }) => expect(err).toBe("Bad Request"));
+        });
+    });
+  });
 });

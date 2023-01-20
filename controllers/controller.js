@@ -8,6 +8,8 @@ const {
   checkUsername,
   updateVotesCount,
   fetchUsers,
+  selectCommentById,
+  sqlDeleteComment,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -67,14 +69,24 @@ const patchVotesArticle = (req, res, next) => {
   Promise.all([
     fetchArticleById(article_id),
     updateVotesCount(updateVotesBy, article_id),
-  ]).then(([articleOriginal, articleUpdated]) => {
-    res.status(200).send(articleUpdated);
-  });
+  ])
+    .then(([articleOriginal, articleUpdated]) => {
+      res.status(200).send(articleUpdated);
+    })
+    .catch(next);
 };
 const getUsers = (req, res, next) => {
   fetchUsers()
     .then((users) => {
       res.status(200).send(users);
+    })
+    .catch(next);
+};
+const deleteCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  Promise.all([selectCommentById(comment_id), sqlDeleteComment(comment_id)])
+    .then((comment) => {
+      res.status(204).send(comment);
     })
     .catch(next);
 };
@@ -88,4 +100,5 @@ module.exports = {
   postCommentByArticleId,
   patchVotesArticle,
   getUsers,
+  deleteCommentById,
 };

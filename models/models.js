@@ -1,7 +1,8 @@
 const db = require("../db/connection");
 
 const selectTopics = () => {
-  return db.query("SELECT * FROM topics;").then(({ rows: topics }) => {
+  const queryStr = "SELECT * FROM topics;";
+  return db.query(queryStr).then(({ rows: topics }) => {
     return topics;
   });
 };
@@ -49,18 +50,15 @@ const selectArticles = (
 };
 
 const selectArticleById = (id) => {
-  return db
-    .query(
-      "SELECT articles.author, articles.title, articles.body, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;",
-      [id]
-    )
-    .then(({ rowCount, rows }) => {
-      if (!rowCount) {
-        return Promise.reject({ status: 404, msg: "no article found" });
-      } else {
-        return rows[0];
-      }
-    });
+  const queryStr =
+    "SELECT articles.author, articles.title, articles.body, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;";
+  return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
+    if (!rowCount) {
+      return Promise.reject({ status: 404, msg: "no article found" });
+    } else {
+      return rows[0];
+    }
+  });
 };
 const selectCommentsByArticleId = (id) => {
   const queryStr =
@@ -114,6 +112,23 @@ const fetchUsers = () => {
     return rows;
   });
 };
+const selectCommentById = (comment_id) => {
+  const queryStr = "SELECT * FROM comments WHERE comment_id = $1;";
+  return db.query(queryStr, [comment_id]).then(({ rowCount, rows }) => {
+    if (!rowCount) {
+      return Promise.reject({ status: 404, msg: "no comment found" });
+    } else {
+      return rows;
+    }
+  });
+};
+const sqlDeleteComment = (comment_id) => {
+  const queryStr =
+    "DELETE FROM comments WHERE comments.comment_id = $1 RETURNING *;";
+  return db.query(queryStr, [comment_id]).then(({ rows }) => {
+    return rows;
+  });
+};
 
 module.exports = {
   selectTopics,
@@ -125,4 +140,6 @@ module.exports = {
   checkUsername,
   updateVotesCount,
   fetchUsers,
+  selectCommentById,
+  sqlDeleteComment,
 };
