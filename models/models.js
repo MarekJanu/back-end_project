@@ -67,6 +67,11 @@ const updateVotesCount = (updateVotesBy, article_id) => {
     return rows[0];
   });
 };
+const fetchUsers = async () => {
+  const queryStr = "SELECT * FROM users;";
+  const users = await db.query(queryStr);
+  return users.rows;
+};
 module.exports = {
   selectTopics,
   selectArticles,
@@ -76,4 +81,5 @@ module.exports = {
   insertCommentByArticleId,
   checkUsername,
   updateVotesCount,
+  fetchUsers,
 };

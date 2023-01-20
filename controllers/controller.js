@@ -9,6 +9,7 @@ const {
   insertCommentByArticleId,
   checkUsername,
   updateVotesCount,
+  fetchUsers,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -36,7 +37,7 @@ const getCommentsByArticeId = (req, res, next) => {
     fetchArticleById(article_id),
     selectCommentsByArticleId(article_id),
   ])
-    .then((comments) => {
+    .then(([article, comments]) => {
       res.status(200).send({ comments });
     })
     .catch(next);
@@ -50,9 +51,8 @@ const postCommentByArticleId = (req, res, next) => {
     fetchArticleById(article_id),
     insertCommentByArticleId(body, username, article_id),
   ])
-    .then((response) => {
-      const comment = { comment: response[2] };
-      res.status(201).send(comment);
+    .then(([user, article, comment]) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
@@ -62,8 +62,13 @@ const patchVotesArticle = (req, res, next) => {
   Promise.all([
     fetchArticleById(article_id),
     updateVotesCount(updateVotesBy, article_id),
-  ]).then((response) => {
-    res.status(202).send(response[1]);
+  ]).then(([articleOriginal, articleUpdated]) => {
+    res.status(200).send(articleUpdated);
+  });
+};
+const getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send(users);
   });
 };
 
@@ -75,4 +80,5 @@ module.exports = {
   getCommentsByArticeId,
   postCommentByArticleId,
   patchVotesArticle,
+  getUsers,
 };

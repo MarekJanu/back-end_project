@@ -3,7 +3,6 @@ const app = require("../app");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
-const { response } = require("express");
 
 beforeEach(() => {
   return seed(testData);
@@ -122,9 +121,8 @@ describe("app", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body: { comments } }) => {
-          const selectedComments = comments[1];
-          expect(selectedComments).toHaveLength(11);
-          selectedComments.forEach((article) => {
+          expect(comments).toHaveLength(11);
+          comments.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
                 author: expect.any(String),
@@ -168,16 +166,6 @@ describe("app", () => {
         .send(inputBody)
         .expect(201)
         .then(({ body: { comment } }) => {
-          expect(comment).toEqual(
-            expect.objectContaining({
-              comment_id: expect.any(Number),
-              body: expect.any(String),
-              article_id: expect.any(Number),
-              author: expect.any(String),
-              votes: expect.any(Number),
-              created_at: expect.any(String),
-            })
-          );
           expect(comment).toEqual({
             comment_id: 19,
             body: "my test comment with text emoji (*′☉.̫☉)",
@@ -221,7 +209,7 @@ describe("app", () => {
       return request(app)
         .patch("/api/articles/3")
         .send(inputBody)
-        .expect(202)
+        .expect(200)
         .then(({ body: article }) => {
           expect(article).toEqual({
             article_id: 3,
@@ -236,12 +224,12 @@ describe("app", () => {
           });
         });
     });
-    it("same as above but with decrementing number of votes", () => {
+    it("Request body accepts an object in the form { inc_votes: newVote }, updating votes, responds with the updated article - decrementing number of votes", () => {
       const inputBody = { inc_votes: -3 };
       return request(app)
         .patch("/api/articles/3")
         .send(inputBody)
-        .expect(202)
+        .expect(200)
         .then(({ body: article }) => {
           expect(article).toEqual({
             article_id: 3,
@@ -254,6 +242,41 @@ describe("app", () => {
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           });
+        });
+    });
+  });
+  describe("/api/users", () => {
+    it("200 - responds with an array of user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual([
+            {
+              username: "butter_bridge",
+              name: "jonny",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            },
+            {
+              username: "icellusedkars",
+              name: "sam",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+            },
+            {
+              username: "rogersop",
+              name: "paul",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+            },
+            {
+              username: "lurker",
+              name: "do_nothing",
+              avatar_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            },
+          ]);
         });
     });
   });
