@@ -32,7 +32,7 @@ const selectArticles = (
       msg: `cannot order by ${order}, invalid criteria`,
     });
   } else {
-    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id `;
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id `;
     let quertStrEnd = `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order};`;
     topic === "default_all_topics"
       ? (queryStr += quertStrEnd)
