@@ -38,11 +38,11 @@ const selectArticles = (
       ? (queryStr += quertStrEnd)
       : (queryStr += `WHERE articles.topic = '${topic}' ` + quertStrEnd);
 
-    return db.query(queryStr).then((topics) => {
-      if (!topics.rowCount) {
+    return db.query(queryStr).then(({ rowCount, rows }) => {
+      if (!rowCount) {
         return Promise.reject({ status: 404, msg: "topic not found" });
       } else {
-        return topics.rows;
+        return rows;
       }
     });
   }
@@ -54,15 +54,19 @@ const selectArticleById = (id) => {
       "SELECT articles.author, articles.title, articles.body, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;",
       [id]
     )
-    .then(({ rows: article }) => {
-      return article[0];
+    .then(({ rowCount, rows }) => {
+      if (!rowCount) {
+        return Promise.reject({ status: 404, msg: "no article found" });
+      } else {
+        return rows[0];
+      }
     });
 };
 const selectCommentsByArticleId = (id) => {
   const queryStr =
     "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;";
   return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
-    if (rowCount === 0) {
+    if (!rowCount) {
       return Promise.reject({ status: 404, msg: "no comments found" });
     } else {
       return rows;
@@ -72,7 +76,7 @@ const selectCommentsByArticleId = (id) => {
 const fetchArticleById = (id) => {
   const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
   return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
-    if (rowCount === 0) {
+    if (!rowCount) {
       return Promise.reject({ status: 404, msg: "article id not found" });
     } else {
       return rows[0];
@@ -93,8 +97,8 @@ const checkUsername = (username) => {
 const insertCommentByArticleId = (body, username, article_id) => {
   const queryStr =
     "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING*;";
-  return db.query(queryStr, [body, username, article_id]).then((response) => {
-    return response.rows[0];
+  return db.query(queryStr, [body, username, article_id]).then(({ rows }) => {
+    return rows[0];
   });
 };
 const updateVotesCount = (updateVotesBy, article_id) => {
@@ -106,8 +110,8 @@ const updateVotesCount = (updateVotesBy, article_id) => {
 };
 const fetchUsers = () => {
   const queryStr = "SELECT * FROM users;";
-  return db.query(queryStr).then((users) => {
-    return users.rows;
+  return db.query(queryStr).then(({ rows }) => {
+    return rows;
   });
 };
 
