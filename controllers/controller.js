@@ -1,5 +1,3 @@
-const { response } = require("express");
-const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
   selectArticles,
@@ -20,16 +18,24 @@ const getTopics = (req, res, next) => {
     res.status(200).send({ topics });
   });
 };
+
 const getArticles = (req, res, next) => {
-  selectArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { topic, sort_by, order } = req.query;
+
+  selectArticles(topic, sort_by, order)
+    .then((articles) => {
+      res.status(200).send(articles);
+    })
+    .catch(next);
 };
+// catch ?
 const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleById(article_id).then((article) => {
-    res.status(200).send({ article });
-  });
+  selectArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch(next);
 };
 const getCommentsByArticeId = (req, res, next) => {
   const { article_id } = req.params;
@@ -67,9 +73,11 @@ const patchVotesArticle = (req, res, next) => {
   });
 };
 const getUsers = (req, res, next) => {
-  fetchUsers().then((users) => {
-    res.status(200).send(users);
-  });
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send(users);
+    })
+    .catch(next);
 };
 
 module.exports = {
