@@ -121,9 +121,8 @@ describe("app", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body: { comments } }) => {
-          const selectedComments = comments[1];
-          expect(selectedComments).toHaveLength(11);
-          selectedComments.forEach((article) => {
+          expect(comments).toHaveLength(11);
+          comments.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
                 author: expect.any(String),

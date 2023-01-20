@@ -37,7 +37,7 @@ const getCommentsByArticeId = (req, res, next) => {
     fetchArticleById(article_id),
     selectCommentsByArticleId(article_id),
   ])
-    .then((comments) => {
+    .then(([article, comments]) => {
       res.status(200).send({ comments });
     })
     .catch(next);
