@@ -5,15 +5,49 @@ const selectTopics = () => {
     return topics;
   });
 };
-const selectArticles = () => {
-  return db
-    .query(
-      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;"
-    )
-    .then(({ rows: articles }) => {
-      return articles;
+const selectArticles = (
+  topic = "default_all_topics",
+  sort_by = "created_at",
+  order = "DESC"
+) => {
+  const sortWhiteList = [
+    "created_at",
+    "article_id",
+    "title",
+    "author",
+    "body",
+    "author",
+    "votes",
+    "article_img_url ",
+  ];
+  const orderWhiteList = ["ASC", "DESC"];
+  if (!sortWhiteList.includes(sort_by)) {
+    return Promise.reject({
+      status: 404,
+      msg: `cannot sort by ${sort_by}, invalid criteria`,
     });
+  } else if (!orderWhiteList.includes(order)) {
+    return Promise.reject({
+      status: 404,
+      msg: `cannot order by ${order}, invalid criteria`,
+    });
+  } else {
+    let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id `;
+    let quertStrEnd = `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order};`;
+    topic === "default_all_topics"
+      ? (queryStr += quertStrEnd)
+      : (queryStr += `WHERE articles.topic = '${topic}' ` + quertStrEnd);
+
+    return db.query(queryStr).then((topics) => {
+      if (!topics.rowCount) {
+        return Promise.reject({ status: 404, msg: "topic not found" });
+      } else {
+        return topics.rows;
+      }
+    });
+  }
 };
+
 const selectArticleById = (id) => {
   return db
     .query("SELECT * FROM articles WHERE articles.article_id = $1;", [id])
@@ -67,11 +101,13 @@ const updateVotesCount = (updateVotesBy, article_id) => {
     return rows[0];
   });
 };
-const fetchUsers = async () => {
+const fetchUsers = () => {
   const queryStr = "SELECT * FROM users;";
-  const users = await db.query(queryStr);
-  return users.rows;
+  return db.query(queryStr).then((users) => {
+    return users.rows;
+  });
 };
+
 module.exports = {
   selectTopics,
   selectArticles,

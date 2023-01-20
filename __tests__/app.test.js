@@ -59,37 +59,76 @@ describe("app", () => {
     });
   });
   describe("/api/articles", () => {
-    it("status 200, responds with an array on object articles with the following properties:  author, title, article_id, topic, created_at, votes, article_img_url", () => {
+    it("feature request ## queries ## by topics = default all, sort_by any valid column = default date, order ASC || DESC = default DESC - defaults. Responds with an array of object articles", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.articles).toHaveLength(5);
-          body.articles.forEach((article) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-              })
-            );
+        .then(({ body: articles }) => {
+          expect(articles).toHaveLength(5);
+          expect(articles[0]).toEqual({
+            author: "icellusedkars",
+            title: "Eight pug gifs that remind me of mitch",
+            article_id: 3,
+            topic: "mitch",
+            created_at: "2020-11-03T09:12:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: "2",
+          });
+          expect(articles[articles.length - 1]).toEqual({
+            author: "butter_bridge",
+            title: "They're not exactly dogs, are they?",
+            article_id: 9,
+            topic: "mitch",
+            created_at: "2020-06-06T09:10:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: "2",
           });
         });
     });
-    it("status 200, returns everything from above + comment_count and sorted by date desc", () => {
+    it("feature request ## queries ## by topics = default all, sort_by any valid column = default date, order ASC || DESC = default DESC - parameters provided. Responds with an array of object articles", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=title&order=ASC")
+        .expect(200)
+        .then(({ body: articles }) => {
+          expect(articles).toHaveLength(4);
+          expect(articles[0]).toEqual({
+            author: "icellusedkars",
+            title: "A",
+            article_id: 6,
+            topic: "mitch",
+            created_at: "2020-10-18T01:00:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: "1",
+          });
+          expect(articles[articles.length - 1]).toEqual({
+            author: "butter_bridge",
+            title: "They're not exactly dogs, are they?",
+            article_id: 9,
+            topic: "mitch",
+            created_at: "2020-06-06T09:10:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: "2",
+          });
+        });
+    });
+    it("status 200, responds with an array on object articles with the following properties:  author, title, article_id, topic, created_at, votes, article_img_url + comment_count and sorted by date desc", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body }) => {
-          body.articles.forEach((article) => {
+        .then(({ body: articles }) => {
+          articles.forEach((article) => {
             expect(article).toHaveProperty("comment_count");
           });
-          expect(body.articles[0].created_at).toBe("2020-11-03T09:12:00.000Z");
-          expect(body.articles[body.articles.length - 1].created_at).toBe(
+          expect(articles[0].created_at).toBe("2020-11-03T09:12:00.000Z");
+          expect(articles[articles.length - 1].created_at).toBe(
             "2020-06-06T09:10:00.000Z"
           );
         });
