@@ -6,6 +6,18 @@ const selectTopics = () => {
     return topics;
   });
 };
+const checkTopicNameOfArticle = (topic) => {
+  if (topic) {
+    let queryStr = "SELECT * FROM articles WHERE articles.topic = $1;";
+    return db.query(queryStr, [topic]).then(({ rowCount, rows: [topic] }) => {
+      if (!rowCount) {
+        return Promise.reject({ status: 404, msg: "no topic found" });
+      } else {
+        return topic;
+      }
+    });
+  } else return topic;
+};
 const selectArticles = (
   topic = "default_all_topics",
   sort_by = "created_at",
@@ -52,11 +64,11 @@ const selectArticles = (
 const selectArticleById = (id) => {
   const queryStr =
     "SELECT articles.author, articles.title, articles.body, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT (comments.comment_id)::int AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;";
-  return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
+  return db.query(queryStr, [id]).then(({ rowCount, rows: [article] }) => {
     if (!rowCount) {
       return Promise.reject({ status: 404, msg: "no article found" });
     } else {
-      return rows[0];
+      return article;
     }
   });
 };
@@ -73,38 +85,42 @@ const selectCommentsByArticleId = (id) => {
 };
 const fetchArticleById = (id) => {
   const queryStr = "SELECT * FROM articles WHERE article_id = $1;";
-  return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
+  return db.query(queryStr, [id]).then(({ rowCount, rows: [article] }) => {
     if (!rowCount) {
       return Promise.reject({ status: 404, msg: "article id not found" });
     } else {
-      return rows[0];
+      return article;
     }
   });
 };
 
 const checkUsername = (username) => {
   const queryStr = "SELECT * FROM users WHERE users.username = $1;";
-  return db.query(queryStr, [username]).then(({ rowCount, rows }) => {
+  return db.query(queryStr, [username]).then(({ rowCount, rows: [user] }) => {
     if (!rowCount) {
       return Promise.reject({ status: 404, msg: "username not found" });
     }
-    return rows[0];
+    return user;
   });
 };
 
 const insertCommentByArticleId = (body, username, article_id) => {
   const queryStr =
     "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING*;";
-  return db.query(queryStr, [body, username, article_id]).then(({ rows }) => {
-    return rows[0];
-  });
+  return db
+    .query(queryStr, [body, username, article_id])
+    .then(({ rows: [comment] }) => {
+      return comment;
+    });
 };
 const updateVotesCount = (updateVotesBy, article_id) => {
   const queryStr =
     "UPDATE articles SET votes = articles.votes + $1 WHERE articles.article_id = $2 RETURNING *;";
-  return db.query(queryStr, [updateVotesBy, article_id]).then(({ rows }) => {
-    return rows[0];
-  });
+  return db
+    .query(queryStr, [updateVotesBy, article_id])
+    .then(({ rows: [article] }) => {
+      return article;
+    });
 };
 const fetchUsers = () => {
   const queryStr = "SELECT * FROM users;";
@@ -142,4 +158,5 @@ module.exports = {
   fetchUsers,
   selectCommentById,
   sqlDeleteComment,
+  checkTopicNameOfArticle,
 };

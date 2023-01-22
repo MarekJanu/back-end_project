@@ -10,6 +10,7 @@ const {
   fetchUsers,
   selectCommentById,
   sqlDeleteComment,
+  checkTopicNameOfArticle,
 } = require("../models/models");
 
 const getHello = (req, res, next) => {
@@ -23,9 +24,11 @@ const getTopics = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
   const { topic, sort_by, order } = req.query;
-
-  selectArticles(topic, sort_by, order)
-    .then((articles) => {
+  Promise.all([
+    checkTopicNameOfArticle(topic),
+    selectArticles(topic, sort_by, order),
+  ])
+    .then(([topic, articles]) => {
       res.status(200).send(articles);
     })
     .catch(next);
