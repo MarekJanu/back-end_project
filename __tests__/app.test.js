@@ -27,16 +27,16 @@ describe("app", () => {
       return request(app)
         .get("/api/banana")
         .expect(404)
-        .then(({ body: err }) => {
-          expect(err.msg).toBe("Bad Request");
+        .then(({ body: { msg: err } }) => {
+          expect(err).toBe("Bad Request");
         });
     });
     it(" status 400, { msg : Bad Request } on non existing id and invalid end-point /api/articles/42/hello", () => {
       return request(app)
         .get("/api/articles/42/hello")
         .expect(404)
-        .then(({ body: err }) => {
-          expect(err.msg).toBe("Bad Request");
+        .then(({ body: { msg: err } }) => {
+          expect(err).toBe("Bad Request");
         });
     });
   });
