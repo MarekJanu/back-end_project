@@ -51,11 +51,11 @@ const selectArticles = (
       ? (queryStr += quertStrEnd)
       : (queryStr += `WHERE articles.topic = '${topic}' ` + quertStrEnd);
 
-    return db.query(queryStr).then(({ rowCount, rows }) => {
+    return db.query(queryStr).then(({ rowCount, rows: articles }) => {
       if (!rowCount) {
         return Promise.reject({ status: 404, msg: "topic not found" });
       } else {
-        return rows;
+        return articles;
       }
     });
   }
@@ -75,11 +75,11 @@ const selectArticleById = (id) => {
 const selectCommentsByArticleId = (id) => {
   const queryStr =
     "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;";
-  return db.query(queryStr, [id]).then(({ rowCount, rows }) => {
+  return db.query(queryStr, [id]).then(({ rowCount, rows: comments }) => {
     if (!rowCount) {
       return Promise.reject({ status: 404, msg: "no comments found" });
     } else {
-      return rows;
+      return comments;
     }
   });
 };
@@ -124,25 +124,27 @@ const updateVotesCount = (updateVotesBy, article_id) => {
 };
 const fetchUsers = () => {
   const queryStr = "SELECT * FROM users;";
-  return db.query(queryStr).then(({ rows }) => {
-    return rows;
+  return db.query(queryStr).then(({ rows: users }) => {
+    return users;
   });
 };
 const selectCommentById = (comment_id) => {
   const queryStr = "SELECT * FROM comments WHERE comment_id = $1;";
-  return db.query(queryStr, [comment_id]).then(({ rowCount, rows }) => {
-    if (!rowCount) {
-      return Promise.reject({ status: 404, msg: "no comment found" });
-    } else {
-      return rows;
-    }
-  });
+  return db
+    .query(queryStr, [comment_id])
+    .then(({ rowCount, rows: comment }) => {
+      if (!rowCount) {
+        return Promise.reject({ status: 404, msg: "no comment found" });
+      } else {
+        return comment;
+      }
+    });
 };
 const sqlDeleteComment = (comment_id) => {
   const queryStr =
     "DELETE FROM comments WHERE comments.comment_id = $1 RETURNING *;";
-  return db.query(queryStr, [comment_id]).then(({ rows }) => {
-    return rows;
+  return db.query(queryStr, [comment_id]).then(({ rows: comment }) => {
+    return comment;
   });
 };
 
