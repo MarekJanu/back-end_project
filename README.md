@@ -1,14 +1,17 @@
-# News API Project
+# News API Projectexplore
 
 ## Introduction
 
-This is a project of a simple news server with the psql database at the back-end. It is reflectiong the past 7 weeks of learing and exploaring js during the Northcoders software development bootcam.
+Hello and Welcome, my name is Marek Januszewski, and this is a brief description of my coding project.
+It is reflecting of my 13 weeks voyage to the Javascript Land, with the guidance of Northcoders, where I could explore and learn diffrent concepts, from the very fundamentals up to some more complex and therfore practical applications of js.
+
+This project is a news service
 
 Link to the server: https://testncnews.onrender.com/api
 
 ## The Project Details
 
-The server uses node express (https://expressjs.com/) for hosting. It also uses postgres (https://www.postgresql.org/) to interacl with sql database.
+The server uses node express (https://expressjs.com/) for hosting. It also uses postgres (https://www.postgresql.org/) to interact with a sql database.
 The list of the end-points covered and examples of how to interact with them can be found in endpoints.json file.
 
 ## Installation and Dependencies
