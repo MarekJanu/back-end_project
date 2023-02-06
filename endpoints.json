@@ -23,5 +23,64 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object ",
+    "parameters": { "article_id": "Number" },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "topic": "coding",
+        "author": "jessjelly",
+        "body": "This is part t...",
+        "created_at": "2020-11-07T06:03:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/pho"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of comments objects by given article id",
+    "parameters": { "article_id": "Number" },
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 89,
+          "body": "Esse et expedita harum non.",
+          "article_id": 1,
+          "author": "cooljmessy",
+          "votes": 2,
+          "created_at": "2020-10-24T07:08:00.000Z"
+        },
+        {
+          "comment_id": 86,
+          "body": "Et explicabo dignissimos.",
+          "article_id": 1,
+          "author": "tickle122",
+          "votes": 14,
+          "created_at": "2020-10-04T02:03:00.000Z"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "accepts a comment by given article id",
+    "parameters": { "article_id": "Number" },
+    "exampleComment": {
+      "username": "lurker",
+      "body": "my test comment (*′☉.̫☉)"
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "accepts a number to change vote count of a comment by given article id",
+    "parameters": { "article_id": "Number" },
+    "exampleVoteUpdate": {
+      "inc_votes": 1
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment by the comment id",
+    "parameters": { "comment_id": "Number" }
   }
 }
