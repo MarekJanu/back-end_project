@@ -32,6 +32,7 @@ const selectArticles = (
     "author",
     "votes",
     "article_img_url ",
+    "comment_count",
   ];
   const orderWhiteList = ["ASC", "DESC"];
   if (!sortWhiteList.includes(sort_by)) {
