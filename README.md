@@ -5,7 +5,7 @@
 Hello and Welcome, my name is Marek Januszewski, and this is a brief description of my coding project.
 It is reflecting of my 13 weeks voyage to the Javascript Land, with the guidance of Northcoders, where I could explore and learn diffrent concepts, from the very fundamentals up to some more complex and therfore practical applications of js.
 
-This project is a news service
+This project is a news service.
 
 Link to the server: https://testncnews.onrender.com/api
 
@@ -37,21 +37,15 @@ Installation steps:
 
 - There should be two files created: .env.test and .env.development. Each of the files should contain PGDATABASE=<database_name_here>, please see the /db/setup.sql file for the correct names.
 
-- Run setup-dbs script to setup the databases (test and development).
+- Run setup-dbs script to setup (npm run setup-dbs) the databases (test and development).
 
-- Run seed script to seed the databases with data.
+- Run seed script (npm run seed) to seed the databases with data.
 
-Use npm test to sun tests for both: utils and
+Use npm test to run tests for both: utils (smaller helper functions) and integration (end to end) testing.
 
-In order to use the serwer please create and set the .env.development and .env.test files in which you will have to assign the name of the database to a Enviroment Variable.
+In order to use the serwer please create and set the .env.development and .env.test files in which you will have to assign the name of the database to a Enviroment Variable (PGDATABASE=<database_name_here>)
 
 To get familiar with the dotenv module please check the following link: https://www.npmjs.com/package/dotenv
 
 You can interact with 2 databases: development and test.
 In order to do that please set the development PGDATABASE to nc_news (PGDATABASE=nc_news) and the test PGDATABASE to nc_news_test (PGDATABASE=nc_news_test).
-
-Please take a look at the avaliable scripts in the package.json file.
-First, you will have to run setup-db script (npm setup-dbs).
-Then, you can use seed script (npm run seed) in order to seed the database with some initial tables and data.
-
-There are also tests avaliable for this server. Please note that while testing the database uses the test data instead of development data.
