@@ -49,3 +49,5 @@ To get familiar with the dotenv module please check the following link: https://
 
 You can interact with 2 databases: development and test.
 In order to do that please set the development PGDATABASE to nc_news (PGDATABASE=nc_news) and the test PGDATABASE to nc_news_test (PGDATABASE=nc_news_test).
+
+The minimum Node.js verion required is 19.
