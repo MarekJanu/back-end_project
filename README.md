@@ -1,4 +1,4 @@
-# News API Projectexplore
+# News API back-end Project
 
 ## _Introduction_
 
